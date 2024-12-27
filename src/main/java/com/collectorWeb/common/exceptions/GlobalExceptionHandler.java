@@ -40,4 +40,16 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(DebtNotExistException.class)
+    public ResponseEntity<ErrorResponse> handleDebtNotExistException(DebtNotExistException ex) {
+        logger.error(ex.getMessage());
+
+        ErrorResponse response = ErrorResponse.builder()
+                .error(ex.getClass().getName())
+                .message(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }

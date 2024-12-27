@@ -50,13 +50,36 @@ public class MainController {
     public ResponseEntity<DebtDTO> createDebt(@RequestBody DebtDTO debtDTO) {
         logger.info("Trying to add debt");
 
-        return ResponseEntity.ok(debtService.addDebt(debtDTO));
+        return ResponseEntity.ok(debtService.add(debtDTO));
     }
 
-//    @DeleteMapping
-//    public ResponseEntity<DebtDTO> deleteDebt(@RequestBody DebtDTO debtDTO) {
-//        logger.info("Trying to delete debt");
-//
-//        return ResponseEntity.ok(debtService.delete(debtDTO));
-//    }
+    @Operation(
+            summary = "Delete debt",
+            description = "Delete debt in db",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Debt successfully deleted"),
+                    @ApiResponse(responseCode = "400", description = "Debt doesn't exist")
+            }
+    )
+    @DeleteMapping
+    public ResponseEntity<DebtDTO> deleteDebt(@RequestBody DebtDTO debtDTO) {
+        logger.info("Trying to delete debt");
+
+        return ResponseEntity.ok(debtService.delete(debtDTO.getId()));
+    }
+
+    @Operation(
+            summary = "Update debt",
+            description = "Update debt in db",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Debt updated successfully"),
+                    @ApiResponse(responseCode = "400", description = "Debt doesn't exist")
+            }
+    )
+    @PatchMapping()
+    public ResponseEntity<DebtDTO> updateDebt(@RequestBody DebtDTO debtDTO) {
+        logger.info("Trying to update debt");
+
+            return ResponseEntity.ok(debtService.update(debtDTO));
+    }
 }

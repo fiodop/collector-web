@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DebtRepository extends JpaRepository<Debt, Integer> {
+    public Debt deleteDebtById(int id);
+    public Debt getDebtById(int id);
 }
