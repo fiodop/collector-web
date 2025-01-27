@@ -1,7 +1,7 @@
 package com.collectorWeb.controller;
 
-import com.collectorWeb.common.dto.DebtDTO;
-import com.collectorWeb.common.dto.DebtorDTO;
+import com.collectorWeb.model.dto.DebtDto;
+import com.collectorWeb.model.dto.DebtorDto;
 import com.collectorWeb.service.DebtService;
 import com.collectorWeb.service.DebtorService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/collector")
+@PreAuthorize("isAuthenticated()")
 public class MainController {
     private static DebtService debtService;
     private static DebtorService debtorService;
@@ -33,7 +35,7 @@ public class MainController {
             }
     )
     @PostMapping("/create-debtor")
-    public ResponseEntity<DebtorDTO> createDebtor(@RequestBody DebtorDTO debtorDTO) {
+    public ResponseEntity<DebtorDto> createDebtor(@RequestBody DebtorDto debtorDTO) {
         logger.info("Trying to add debtor");
 
         return ResponseEntity.ok(debtorService.addDebtor(debtorDTO));
@@ -49,7 +51,7 @@ public class MainController {
 
     )
     @PostMapping("/create-debt")
-    public ResponseEntity<DebtDTO> createDebt(@RequestBody DebtDTO debtDTO) {
+    public ResponseEntity<DebtDto> createDebt(@RequestBody DebtDto debtDTO) {
         logger.info("Trying to add debt");
 
         return ResponseEntity.ok(debtService.add(debtDTO));
@@ -64,7 +66,7 @@ public class MainController {
             }
     )
     @DeleteMapping
-    public ResponseEntity<DebtDTO> deleteDebt(@RequestBody DebtDTO debtDTO) {
+    public ResponseEntity<DebtDto> deleteDebt(@RequestBody DebtDto debtDTO) {
         logger.info("Trying to delete debt");
 
         return ResponseEntity.ok(debtService.delete(debtDTO.getId()));
@@ -79,15 +81,19 @@ public class MainController {
             }
     )
     @PatchMapping()
-    public ResponseEntity<DebtDTO> updateDebt(@RequestBody DebtDTO debtDTO) {
+    public ResponseEntity<DebtDto> updateDebt(@RequestBody DebtDto debtDTO) {
         logger.info("Trying to update debt");
 
-            return ResponseEntity.ok(debtService.update(debtDTO));
+            return ResponseEntity.ok(debtService.fromEntityToDto(debtService.update(debtDTO)));
     }
 
+    @Operation(
+            summary = "Get debtors",
+            description = "Get debtors and their debts by debtor's id"
+    )
     @GetMapping
-    public ResponseEntity<List<DebtorDTO>> getAllDebts(@RequestBody DebtorDTO debtorDTO) {
-        return ResponseEntity.ok(debtorService.getDebtsByDebtor(debtorDTO.getId()));
+    public ResponseEntity<List<DebtorDto>> getAllDebts(@RequestParam(required = true) int appUserId) {
+        return ResponseEntity.ok(debtorService.getDebtsByAppUserId(appUserId));
     }
 
 }

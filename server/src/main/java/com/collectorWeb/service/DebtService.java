@@ -1,24 +1,28 @@
 package com.collectorWeb.service;
 
-import com.collectorWeb.common.dto.DebtDTO;
+import com.collectorWeb.model.dto.DebtDto;
 import com.collectorWeb.common.exceptions.DebtNotExistException;
 import com.collectorWeb.common.exceptions.DebtorNotExistException;
+import com.collectorWeb.model.dto.DebtorDto;
 import com.collectorWeb.model.entity.Debt;
 import com.collectorWeb.model.entity.Debtor;
 import com.collectorWeb.repository.DebtRepository;
 import com.collectorWeb.repository.DebtorRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class DebtService {
-    private DebtRepository debtRepository;
+    private static DebtRepository debtRepository;
     private static DebtorRepository debtorRepository;
 
-    public DebtDTO add(DebtDTO debtDTO) {
+    @Transactional
+    public DebtDto add(DebtDto debtDTO) {
         Debtor debtorOfDebt = debtorRepository.getDebtorByUsername(debtDTO.getDebtorUsername());
 
         if (debtorOfDebt == null) {
@@ -40,17 +44,19 @@ public class DebtService {
         return debtDTO;
     }
 
-    public DebtDTO delete(int debtId) {
+    @Transactional
+    public DebtDto delete(int debtId) {
         Debt debt = debtRepository.deleteDebtById(debtId);
         if (debt == null) {
             throw new DebtNotExistException("Debt with id: " + debtId + " does not exist");
         } else {
-            return new DebtDTO(debt);
+            return fromEntityToDto(debt);
         }
 
     }
 
-    public DebtDTO update(DebtDTO debtDTO) {
+    @Transactional
+    public Debt update(DebtDto debtDTO) {
         Debt debt = debtRepository.getDebtById(debtDTO.getId());
         if(debt == null){
             throw new DebtNotExistException("Debt does not exist");
@@ -81,9 +87,24 @@ public class DebtService {
         }
 
         debtRepository.save(debt);
-        return new DebtDTO(debt);
+        return debt;
     }
 
+    @Transactional
+    public List<Debt> getAllDebts() {
+        return debtRepository.findAll();
+    }
 
+    public DebtDto fromEntityToDto(Debt debt) {
+        return DebtDto.builder()
+                .id(debt.getId())
+                .debtorUsername(debt.getDebtor().getUsername())
+                .title(debt.getTitle())
+                .sum(debt.getSum())
+                .currency(debt.getCurrency())
+                .description(debt.getDescription())
+                .notify(debt.isNotify())
+                .build();
+    }
 
 }

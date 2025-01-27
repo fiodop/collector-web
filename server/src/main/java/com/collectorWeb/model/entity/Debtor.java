@@ -23,5 +23,7 @@ public class Debtor {
     @OneToMany
     @JoinColumn(name = "debtor_id")
     private List<Debt> debts;
+    @OneToMany
+    private List<AppUser> appUser;
 
 }

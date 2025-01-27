@@ -1,6 +1,6 @@
 package com.collectorWeb.common.exceptions;
 
-import com.collectorWeb.common.dto.ErrorResponse;
+import com.collectorWeb.model.dto.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -43,6 +43,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DebtNotExistException.class)
     public ResponseEntity<ErrorResponse> handleDebtNotExistException(DebtNotExistException ex) {
+        logger.error(ex.getMessage());
+
+        ErrorResponse response = ErrorResponse.builder()
+                .error(ex.getClass().getName())
+                .message(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FailedToSendMailException.class)
+    public ResponseEntity<ErrorResponse> handleFailedToSendMailException(FailedToSendMailException ex) {
         logger.error(ex.getMessage());
 
         ErrorResponse response = ErrorResponse.builder()
