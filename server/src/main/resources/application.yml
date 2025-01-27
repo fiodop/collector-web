@@ -1,16 +1,4 @@
 spring:
-  mail:
-    host: smtp.timeweb.ru
-    port: 465
-    username: collector-web@mogcommunity.ru
-    password: popugai_oldspays1
-    protocol: smtp
-    properties:
-      mail:
-        smtp:
-          auth: true
-          ssl.enable: true
-          starttls.enable: false
   application:
     name: collector-web
   datasource:
